@@ -69,6 +69,8 @@
 
 `http://localhost:9999/static/html/jetty-chat.html` 
 
+初始化密码： `123456`
+
 
   ### Nginx 部署静态文件反向代理websocket
   
