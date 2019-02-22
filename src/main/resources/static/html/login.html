@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<div class="sidenav">
+    <div class="nav-text">
+        <h2>Login Page</h2>
+    </div>
+</div>
+<div class="rightnav">
+    <div class="col-xs-4 col-md-8 col-lg-5">
+        <div class="form-contain">
+            <form action="/auth/login" method="post">
+                <div class="form-group">
+                    <label for="exampleInputEmail">Email address</label>
+                    <input type="email" name="username" class="form-control" id="exampleInputEmail"
+                           aria-describedby="emailHelp" placeholder="Enter email">
+                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword">Password</label>
+                    <input type="password" class="form-control" name="password" id="exampleInputPassword"
+                           placeholder="Password">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+                <div class="d-flex justify-content-center">Don't have an account? &nbsp; <a href="register.html">Register</a> </div>
+            <hr>
+            <span class="spanOr">or</span>
+            <div class="d-flex justify-content-center">
+            <a class="btn github" href="/oauth2/authorization/github"><i class="fa fa-github fa-2x" aria-hidden="true"></a></i></a>
+            <a class="btn gmail" href="/oauth2/authorization/google"><i class="fa fa-google fa-2x" aria-hidden="true"></a></i></a>
+            <!--<a class="btn twitter" href="/oauth2/authorization/twitter"><i class="fa fa-twitter fa-2x" aria-hidden="true"></a></i></a>-->
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

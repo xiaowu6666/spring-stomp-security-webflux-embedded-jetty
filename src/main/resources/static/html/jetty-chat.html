@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jetty Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/static/css/chat.css">
+</head>
+<body>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Sign up</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                please sign and return
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/static/html/login.html'">Login
+                    Page
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" id="app">
+    <h3 class="username">
+        <img :src="me.avatar" class="user-list-avatar" alt="user avatar">{{me.username}}
+        <div class="logout" v-if="me"><a href="/logout">Logout</a></div>
+    </h3>
+    <div class="row" style="max-height: 720px;overflow: auto;">
+        <div class="col-12 col-md-2 col-xs-12 navbar-expand-md">
+            <div class="align-items-center"><span class="algolia-autocomplete">在线用户</span><span
+                    class="unread visible-xs-block">{{totalUnread}}</span>
+                <button class="btn btn-link bd-search-docs-toggle d-md-none p-0 ml-3" type="button"
+                        data-toggle="collapse" data-target="#bd-docs-nav" aria-controls="bd-docs-nav"
+                        aria-expanded="false" aria-label="Toggle docs navigation">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 30 30" width="30" height="30"
+                         focusable="false"><title>Menu</title>
+                        <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10"
+                              d="M4 7h22M4 15h22M4 23h22"/>
+                    </svg>
+                </button>
+                <nav class="collapse bd-links bd-sidenav navbar-collapse" id="bd-docs-nav">
+                    <ul class="nav flex-column" style="width: 100%;" v-if="userList.length">
+                        <a class="nav-link" href="javascript:;" @click="selectOne(user)" v-for="user in userList">
+                            <img class="user-list-avatar" :src="user.avatar">
+                            {{user.username}} <span class="unread">{{user.unread}}</span></a>
+                    </ul>
+                    <a class="nav-link disabled" href="#" v-else>暂无用户在线！</a>
+                </nav>
+            </div>
+        </div>
+        <main id="chat-content" class="col-12 col-md-10 col-xs-12" role="main">
+            <p class="h5 text-center">{{selectUser.username}}</p>
+            <hr>
+            <div class="content" v-for="message in messages" v-if="message.user.username==me.username"><img
+                    class="avatar" :src="message.user.avatar">
+                <div class="plain left">
+                    <pre class="ng-binding">{{message.content}}</pre>
+                </div>
+            </div>
+
+            <div class="content right-content" v-else><img class="right-avatar" :src="message.user.avatar">
+                <div class="plain right">
+                    <pre class="ng-binding">{{message.content}}</pre>
+                </div>
+            </div>
+        </main>
+        <div class="input-group">
+            <textarea class="form-control" rows="1" :disabled="isdisabled" v-model="content"></textarea>
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="button" @click="sendMsg" :disabled="isdisabled">Send</button>
+          </span></div>
+    </div>
+
+</div>
+</div>
+</body>
+<script>
+
+    function users() {
+        return axios.get('/api/user/online',{timeout: 2000});
+    }
+
+    function me() {
+        return axios.get('/api/user/loginuser',{timeout: 2000});
+    }
+
+    //过滤自身的
+    function filterMe(users, me) {
+        return users.filter(function (user) {
+            return user.email != me.email;
+        })
+    }
+
+    axios.all([users(), me()])
+        .then(axios.spread(function (userResp, meResp) {
+            // Both requests are now complete
+            var users = userResp.data;
+            var me = meResp.data;
+            if (users.hasOwnProperty('code')) {
+                if (users.code === 403) {
+                    $('#exampleModal').modal('show');
+                }
+            }
+            vm.me = me;
+            users = filterMe(users, me);
+            vm.userList = users;
+        }));
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            userList: [],
+            me: {},
+            selectUser: {},
+            isdisabled: true,
+            messages: [],
+            content: "",
+            totalUnread: ''
+        }
+        ,
+        methods: {
+            selectOne: function (user) {
+                this.selectUser = user;
+                this.isdisabled = false;
+                var list = sessionStorage.getItem(this.selectUser.email+'<-'+this.me.email);
+                if (list == null || list == "")
+                    this.messages = []
+                else
+                    this.messages = JSON.parse(list);
+                if (this.selectUser.unread) {
+                    this.totalUnread = this.totalUnread - this.selectUser.unread;
+                    this.selectUser.unread = '';
+                    if (this.totalUnread <= 0)
+                        this.totalUnread = '';
+                }
+            },
+            sendMsg: function () {
+                if (this.content != null && this.content != "") {
+                    var msg = {};
+                    msg.content = this.content;
+                    msg.targetUser = this.selectUser;
+                    msg.user = this.me;
+                    this.messages.push(msg);
+                    sessionStorage.setItem(this.selectUser.email+'<-'+this.me.email, JSON.stringify(this.messages));
+                    this.stompClient.send('/app/receive.messgae', {}, JSON.stringify(msg));
+                }
+                this.content = "";
+            }
+        },
+        created: function () {
+            var socket = new SockJS('/endpoint');
+            var stompClient = Stomp.over(socket);
+            var self = this;
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                self.stompClient = stompClient;
+                //订阅在线列表
+                stompClient.subscribe('/topic/user.list', function (message) {
+                    var messageJSON = JSON.parse(message.body);
+                    self.userList = filterMe(messageJSON, self.me);
+                })
+
+                //信息列表
+                stompClient.subscribe('/user/queue.notification', function (message) {
+                    var messageJSON = JSON.parse(message.body);
+                    var email = messageJSON.user.email;
+                    if (self.selectUser.email == email) {
+                        self.messages.push(messageJSON);
+                        sessionStorage.setItem(email+'<-'+self.me.email, JSON.stringify(self.messages));
+                    } else { //设置未读信息
+                        var msgList = JSON.parse(sessionStorage.getItem(email));
+                        if (msgList == null)
+                            msgList = [];
+                        console.log('msgList', msgList);
+                        msgList.push(messageJSON);
+                        sessionStorage.setItem(email+'<-'+self.me.email, JSON.stringify(msgList));
+                        var userList = self.userList;
+                        console.log('userList', userList);
+                        for (var i = 0; i < userList.length; i++) {
+                            if (userList[i].email === email) {
+                                var newIndex = userList[i];
+                                if (self.totalUnread === '')
+                                    self.totalUnread = 1;
+                                else self.totalUnread = self.totalUnread + 1;
+                                if (newIndex.unread == '' || newIndex.unread == null) {
+                                    newIndex.unread = 1;
+                                    Vue.set(self.userList, i, newIndex);
+                                } else {
+                                    newIndex.unread = newIndex.unread + 1;
+                                    Vue.set(self.userList, i, newIndex);
+                                }
+                            }
+                        }
+                    }
+                })
+            }, function (error) {
+                console.log('err', error);
+            });
+        }
+    });
+
+</script>
+
+</html>

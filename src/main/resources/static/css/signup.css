@@ -1,0 +1,33 @@
+html,body{
+    height: 100%;
+}
+
+.container{
+    height: 100%;
+}
+
+
+@media screen and (min-width: 736px){
+    .sign-up-card{
+       margin-left: 60%;
+    }
+}
+
+.sign-up-card{
+    position: relative;
+    top: 30%;
+    left: 0;
+}
+
+.bg-purple{
+    background: #563d7c;
+}
+
+.fa{
+    color: #fff;
+}
+
+.red{
+    background: red;
+    color: #f00;
+}

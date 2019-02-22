@@ -1,0 +1,59 @@
+
+.sidenav{
+    height: 100%;
+    background-color: #000;
+    overflow-x: hidden;
+}
+
+@media screen and (min-width: 768px){
+    .rightnav{
+        margin-left: 40%;
+    }
+
+    .sidenav{
+        width: 40%;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+
+    .form-contain{
+        margin-top: 80%;
+    }
+
+}
+
+.nav-text{
+    margin-top: 15%;
+    color: #ccc;
+    padding: 70px;
+}
+
+.spanOr{
+    display: inline-block;
+    position: relative;
+    top: -2.1em;
+    left: 43%;
+    padding: 0 0.8em;
+    background: #fff;
+}
+
+.github{
+  color: #3c4146;
+}
+
+.gmail{
+  color: #d93025;
+}
+
+.twitter{
+    color: #1da1f2;
+}
+
+.facebook{
+    color: #29487d;
+}
+
+a:hover.github{
+     color: #3c4146;
+}

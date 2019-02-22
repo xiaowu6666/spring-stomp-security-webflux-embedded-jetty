@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.2.1/css/bootstrap.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.6/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+
+        h2.text-center {
+            padding-top: 3em;
+        }
+    </style>
+</head>
+<body>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">register success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                please sign and return
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='/static/html/login.html'">Login
+                    Page
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-8 col-xs-12">
+            <h2 class="text-center">Register</h2>
+            <form id="app" @submit.prevent="submit">
+                <div class="form-group row">
+                    <label for="username" class="col-sm-3 col-form-label-lg">Username</label>
+                    <div class="col-sm-9">
+                        <input type="text" id="username" :class="{ 'is-invalid': isValidUname }" v-model="username"
+                               class="form-control" @blur="unameValid" required>
+                        <div class="invalid-feedback">
+                            {{usernameFeedback}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label-lg" for="Email">Email</label>
+                    <div class="col-sm-9">
+                        <input type="email" id="Email" v-model="email" class="form-control"
+                               :class="{ 'is-invalid': isValidEmail }" @blur="emailValid" required>
+                        <div class="invalid-feedback">
+                            {{emailFeedback}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label-lg" for="current-password">Password</label>
+                    <div class="col-sm-9">
+                        <input type="password" id="current-password" :class="{ 'is-invalid': isValidPasswd }"
+                               v-model="password" @blur="passVaild" class="form-control" required>
+                        <div class="invalid-feedback">
+                            {{passwdFeedback}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label-lg" for="confirm-password">Confirm  passwd</label>
+                    <div class="col-sm-9">
+                        <input type="password" id="confirm-password" :class="{ 'is-invalid': isValidPasswds }"
+                               v-model="passwd2" @blur="passwdCheck" class="form-control"  required>
+                        <div class="invalid-feedback">
+                            {{passwdFeedback2}}
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary float-right">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            usernameFeedback: '',
+            emailFeedback: '',
+            passwdFeedback: '',
+            passwdFeedback2: '',
+            username: '',
+            email: '',
+            password: '',
+            passwd2: '',
+            isValidUname: false,
+            isValidPasswd: false,
+            isValidEmail: false,
+            isValidPasswds: false
+        },
+        methods: {
+            unameValid: function () {
+                var username = this.username;
+                if (!username) {
+                    this.usernameFeedback = "Please input username";
+                    this.isValidUname = true;
+                    return;
+                }
+                if (username.length >= 2) {
+                    axios.get('/api/user/existsuname',
+                        {
+                            params: {username: username}
+                        }).then((response) => {
+                        var code = response.data;
+                        if (code == 200) {
+                            this.usernameFeedback = '';
+                            this.isValidUname = false;
+                        }
+                        else if (code == 304) {
+                            this.usernameFeedback = "Username already exists";
+                            this.isValidUname = true;
+                        }
+                    }).catch((error) => {
+                        console.log(this);
+                    });
+                } else if (username.length < 2) {
+                    this.usernameFeedback = "Username length must be greater than 1";
+                    this.isValidUname = true;
+                    return;
+                }
+
+
+            },
+            emailValid: function () {
+                var email = this.email;
+                if (!email) {
+                    this.emailFeedback = 'Please input your email,we\'ll never share your email with anyone else.';
+                    this.isValidEmail = true;
+                    return;
+                } else {
+                    axios.get('/api/user/existsemail',
+                        {params: {email: email}})
+                        .then(response => {
+                            var code = response.data;
+                            if (code == 200) {
+                                this.emailFeedback = '';
+                                this.isValidEmail = false;
+                            }
+                            else if (code == 304) {
+                                console.log('304--------------------------');
+                                this.emailFeedback = 'Email already register';
+                                this.isValidEmail = true;
+                            }
+                        })
+                        .catch(error => {
+                            console.log(this);
+                        });
+                }
+            },
+            passVaild: function () {
+                var passwd = this.password;
+                if (!passwd) {
+                    this.passwdFeedback = 'Please input web application password.';
+                    this.isValidPasswd = true;
+                } else if (passwd.length < 6) {
+                    this.passwdFeedback = 'Password length must be great then 6';
+                    this.isValidPasswd = true;
+                } else {
+                    this.passwdFeedback = '';
+                    this.isValidPasswd = false;
+                }
+            },
+            passwdCheck: function(){
+                if (this.password === this.passwd2){
+                    this.passwdFeedback2 = '';
+                    this.isValidPasswds = false;
+                } else {
+                    this.passwdFeedback2 = 'The passwords you entered do not match.';
+                    this.isValidPasswds = true;
+                }
+            },
+            submit: function () {
+                var flag = this.isValidUname || this.isValidPasswd || this.isValidEmail || this.isValidPasswds;
+                if (!flag) {
+                    var username = this.username;
+                    var email = this.email;
+                    var password = this.password;
+                    axios({
+                        url: '/api/user/register',
+                        method: 'POST',
+                        data: {
+                            username: username,
+                            email: email,
+                            password: password
+                        },
+                        transformRequest: [function (data) {
+                            // Do whatever you want to transform the data
+                            let ret = ''
+                            for (let it in data) {
+                                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+                            }
+                            return ret
+                        }],
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+
+                    })
+                        .then(response => {
+                            var result = response.data;
+                            if (result.code == 200) {
+                                $('#exampleModal').modal('show');
+                            }
+                        }).catch(error => {
+                          console.log('err',error);
+                          alert('error,please send email to ting6405@gamil.com admin');
+                    })
+                }
+            }
+        }
+    });
+</script>
+</html>

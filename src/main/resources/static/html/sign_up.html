@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign up page</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/css/signup.css">
+
+</head>
+<body style="background:#607d8b;">
+<div class="container">
+    <div class="col-md-5 col-xs-12 sign-up-card">
+        <div class="card">
+            <div class="card-header">
+                <h5>Sign up</h5>
+            </div>
+
+            <div class="card-body">
+                <form class="needs-validation" novalidate id="fm" onsubmit="return false">
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                             <span class="input-group-text bg-purple">
+                                <i class="fa fa-user-circle-o" aria-hidden="true"></i>
+                             </span>
+                        </div>
+                        <input type="email" class="form-control" name="username" placeholder="Email Address" required>
+                        <div class="invalid-feedback">
+                            Please provide a valid email.
+                        </div>
+                    </div>
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                           <span class="input-group-text bg-purple">
+                               <i class="fa fa-key" aria-hidden="true"></i>
+                           </span>
+                        </div>
+                        <input type="password" class="form-control" name="password" placeholder="Password" required>
+                    </div>
+                    <div class="invalid-feedback login-err">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+                    <div class="alert">
+                        <a class="close" data-dismiss="alert">×</a>
+                    </div>
+                    <a onclick="submit()" href="javascript:void(0);" onclick="submit()" class="btn float-right login-btn bg-purple">Login</a>
+
+                    <input type="submit" value="Login"
+                           class="btn float-right login-btn bg-purple">
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    $('.alert').hide();
+    var username = $('input[name="username"]').val();
+    var password = $('input[name="password"]').val();
+    var formData = {"username": username, "password": password};
+
+    $('#fm').submit(function (e) {
+        console.log('e',e);
+        if (e.isDefaultPrevented()){
+            $.ajax({
+                url: "/static/js/fail.json",
+                method: "GET",
+                data: $('#fm').serialize(),
+                success: function (result) {
+                    if (result.code == 200) {
+                        console.log("login success!");
+                        window.location.href = '/static/html/jetty-wechat.htlm';
+                    } else {
+                        $('.login-err').text(result.description);
+                        console.log("fail", result.description);
+                    }
+                }
+            });
+        }
+
+    })
+
+    var formData = {"username":username,"password":password};
+    function submit(){
+       $.ajax({
+        url:'/auth/login',
+        dataType:"json",
+        method: "POST",
+        data: formData
+       }).done(function(result){
+          if(result.code == 200){
+        	  //login success
+          }else{
+              $('.alert').show();
+        	  $('.alert').append(result.description);
+          }
+       }).fail(function(result){
+           $('.alert').css("display","");
+           $('alert').css("response error");
+       })
+    }
+
+</script>
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+
+</html>

@@ -1,0 +1,89 @@
+   #chat-content{
+    height: 650px;
+    max-height: 100%; 
+    overflow: auto;
+   }
+
+   .user-list-avatar{
+        width: 25px;
+        height: 25px;
+    }
+
+    .content img{
+        vertical-align: top;
+        width: 40px;
+        height: 40px;
+    }
+
+    .plain{
+        display: inline-block;
+        color: #fff;
+        border-radius: 3px;
+        font-family: inherit;
+        word-wrap:break-word;
+        word-break:break-all;
+        max-width: 80%;
+        background: #aca;
+        position: relative;
+    }
+
+    .left{
+        margin-left: 14px;
+    }
+
+    .right-content{
+        text-align: right;
+    }
+
+
+    .ng-binding{
+        white-space: pre-wrap;
+        word-break: normal;
+        font-size: initial;
+        padding: 8px 14px;
+        margin-bottom: 0!important;
+    }
+
+    .plain.left::before{
+        border: 6px solid transparent;
+        content: " ";
+        border-right-color: #aca;
+        border-right-width: 12px;
+        position: absolute;
+        top: 15px;
+        left: -18px;
+    }
+
+    .right{
+        margin-right: 14px;
+    }
+
+    .right-avatar{
+        float: right;
+    }
+
+    .plain.right::after{
+        border: 6px solid transparent;
+        content: " ";
+        border-left-color: #aca;
+        border-left-width: 12px;
+        position: absolute;
+        top: 15px;
+        right: -18px;
+    }
+
+    .unread{
+        float: right;
+        background: red;
+        padding: 0 5px;
+        border-radius: 50%;
+        text-align: right;
+        clear: right;
+        font-size: 10px;
+        color: #fff;
+    }
+
+    .logout{
+        float: right;
+        font-size: 0.6em;
+    }
