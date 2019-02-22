@@ -31,7 +31,7 @@
 
 - 订阅频道信息权限控制
 
-  如果想在线查看项目效果，可以在浏览器直接访问  `http://shenyifeng.tk/static/html/jetty-chat.html`
+  如果想在线查看项目效果，可以在浏览器直接访问  [http://shenyifeng.tk/static/html/jetty-chat.html](http://shenyifeng.tk/static/html/jetty-chat.html)
 
   
 
