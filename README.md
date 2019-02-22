@@ -70,7 +70,7 @@
 `http://localhost:9999/static/html/jetty-chat.html` 
 
 
-  ####Nginx 部署静态文件反向代理websocket
+  ### Nginx 部署静态文件反向代理websocket
   
 ````
  map $http_upgrade $connection_upgrade {
