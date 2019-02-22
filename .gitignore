@@ -1,0 +1,12 @@
+.idea/*
+.settings/*
+.indexs/*
+target/*
+.classpath
+.factorypath
+.project
+pybbs.iml
+test.iml
+
+data.mv.db
+data.trace.db
