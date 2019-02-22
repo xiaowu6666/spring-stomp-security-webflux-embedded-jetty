@@ -40,8 +40,8 @@
 </div>
 <div class="container" id="app">
     <h3 class="username">
-        <img :src="me.avatar" class="user-list-avatar" alt="user avatar">{{me.username}}
-        <div class="logout" v-if="me"><a href="/logout">Logout</a></div>
+        <img :src="me.avatar" v-if="me.avatar" class="user-list-avatar" alt="user avatar">{{me.username}}
+        <div class="logout" v-if="me.username"><a href="/logout">Logout</a></div>
     </h3>
     <div class="row" style="max-height: 720px;overflow: auto;">
         <div class="col-12 col-md-2 col-xs-12 navbar-expand-md">
@@ -117,6 +117,7 @@
             if (users.hasOwnProperty('code')) {
                 if (users.code === 403) {
                     $('#exampleModal').modal('show');
+                    return;
                 }
             }
             vm.me = me;
