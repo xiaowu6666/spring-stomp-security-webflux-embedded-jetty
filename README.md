@@ -31,7 +31,7 @@
 
 - 订阅频道信息权限控制
 
-  如果想在线查看项目效果，可以在浏览器直接访问  `http://shenyifeng.tk/static/html/jetty-chat.html``
+  如果想在线查看项目效果，可以在浏览器直接访问  `http://shenyifeng.tk/static/html/jetty-chat.html`
 
   
 
@@ -47,11 +47,11 @@
 
 ###### 选择打包方式
 
-[maven-jar-plugin]: https://maven.apache.org/plugins/maven-jar-plugin/
+[maven-jar-plugin](https://maven.apache.org/plugins/maven-jar-plugin/) 
 
 将所有的依赖jar 分离出来放到lib中，所有的代码逻辑放到一个jar ，运行时依赖和配置文件都要放到同等级目录下
 
-[maven-assembly-plugin]: http://maven.apache.org/plugins/maven-assembly-plugin/
+[maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/)
 
 这个将所有依赖jar，配置文件放放入同一个jar中运行，比较方便，但是体积有点大
 
@@ -70,5 +70,30 @@
 `http://localhost:9999/static/html/jetty-chat.html` 
 
 
+  ####Nginx 部署静态文件反向代理websocket
+  
+````
+ map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''  close;
+    }
 
-如果你喜欢这个项目，请给我加一个颗星🙂
+    server {
+        listen       80;
+        server_name  localhost;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+            proxy_pass http://localhost:9999;
+            #websocket
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+        
+````
